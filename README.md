@@ -1,4 +1,4 @@
-# Flex-Container
+# ![FlexContainer class icon](./icon_32px.png) Flex-Container
 ### A Container that arranges its children horizontally or vertically and provides various additionnal properties.
 
 These properties include : 
@@ -11,4 +11,6 @@ These properties include :
 - gaps
 - stylebox
 
-Script inheriting from this node should have the `@tool` tag.
+Script inheriting from this node should have the `@tool` tag !
+
+More properties may appear in the future.
