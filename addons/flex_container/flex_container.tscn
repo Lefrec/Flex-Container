@@ -1,23 +1,20 @@
-[gd_scene format=3 uid="uid://bvwx4k80uhmkb"]
+[gd_scene format=3 uid="uid://chwltna4h7jtx"]
 
-[ext_resource type="Script" uid="uid://qjk2k16hh77c" path="res://flex_container.gd" id="1_ukev3"]
+[sub_resource type="GDScript" id="GDScript_i1l8g"]
+script/source = "@tool
 
-[node name="FlexContainer" type="Container" unique_id=942189517]
-offset_top = -657.0
-offset_right = 524.0
-offset_bottom = 338.0
-script = ExtResource("1_ukev3")
-vertical = true
-align_vertical = 2
-wrapping = true
-reverse_fill = true
-margin = 20.0
-margin_top = 20.0
-margin_bottom = 20.0
-margin_left = 20.0
-margin_right = 20.0
-gap_vertical = 10.0
-gap_horizontal = 10.0
+extends FlexContainer
+"
+
+[node name="FlexContainer" type="Container" unique_id=216563487]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -333.0
+offset_bottom = -274.0
+grow_horizontal = 2
+grow_vertical = 2
+script = SubResource("GDScript_i1l8g")
 metadata/_custom_type_script = "uid://qjk2k16hh77c"
 
 [node name="ColorRect" type="ColorRect" parent="." unique_id=1304720447]
@@ -69,42 +66,6 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="ColorRect9" type="ColorRect" parent="." unique_id=1356615339]
-custom_minimum_size = Vector2(50, 50)
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
-
-[node name="ColorRect10" type="ColorRect" parent="." unique_id=1743151304]
-custom_minimum_size = Vector2(50, 50)
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
-
-[node name="ColorRect11" type="ColorRect" parent="." unique_id=357761796]
-custom_minimum_size = Vector2(50, 50)
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
-
-[node name="ColorRect12" type="ColorRect" parent="." unique_id=2134376216]
-custom_minimum_size = Vector2(50, 50)
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
-
-[node name="ColorRect13" type="ColorRect" parent="." unique_id=2026058725]
-custom_minimum_size = Vector2(50, 50)
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
-
-[node name="ColorRect14" type="ColorRect" parent="." unique_id=1693884163]
-custom_minimum_size = Vector2(50, 50)
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
-
-[node name="ColorRect15" type="ColorRect" parent="." unique_id=1220444448]
 custom_minimum_size = Vector2(50, 50)
 layout_mode = 2
 size_flags_horizontal = 3

@@ -1,66 +1,72 @@
 @tool
+@icon("./icon.svg")
 
+## A Container that arranges its children horizontally or vertically 
+## and provides various additionnal properties.
+##
+## These properties include : axis alignement, wrapping, sorting, 
+## reverse filling, allowing children to expand, margins, gaps and stylebox.
+## Script inheriting from this node should have the [code]@tool[/code] tag.
+class_name FlexContainer
 extends Container
 
-## Container custom regroupant des propriétés de layout, de marge, d'espacement et de panel
-class_name FlexContainer
+## More properties may be appear in the future.
 
-#region Export
 @export_group("Layout")
-## Organise les enfants les uns sur les autres plutôt que les uns à côté des autres
+## If [code]true[/code], arranges its children vertically instead of horizontally.
 @export var vertical : bool = false :
 	set(value):
 		vertical = value
 		_update_axis()
 		queue_sort() 
 
-## Alignement horizontal des enfants Control par rapport au Container
+## Children alignment on the horizontal axis (must be one of [enum BEGIN], [enum CENTER], or [enum END])
 @export var align_horizontal : Align = Align.BEGIN :
 	set(value):
 		align_horizontal = value
 		_update_axis()
 		queue_sort() 
 
-## Alignement vertical des enfants Control par rapport au Container
+## Children alignment on the vertical axis (must be one of [enum BEGIN], [enum CENTER], or [enum END])
 @export var align_vertical : Align = Align.BEGIN :
 	set(value):
 		align_vertical = value
 		_update_axis()
 		queue_sort() 
 
-## Arrange les enfants sur de nouvelles rangées si nécessaire
+## If [code]true[/code], creates new rows or columns to fit children
 @export var wrapping : bool = false :
 	set(value):
 		wrapping = value
 		queue_sort() 
 
-## Défini comment les enfants sont triés
-@export var sort : Sort = Sort.NORMAL :
-	set(value):
-		sort = value
-		queue_sort() 
-
-## Place les rangées d'enfants de la dernière à la première (seulement important quand plusierus rangées sont crées par le wrapping)
+## If [code]wrapping is true[/code], places the rows or columns from last to first
 @export var reverse_fill : bool = false :
 	set(value):
 		reverse_fill = value
 		queue_sort()
 
+## The way children are sorted (must be one of [enum NORMAL], [enum REVERSE], or [enum RANDOM])
+@export var sort : Sort = Sort.NORMAL :
+	set(value):
+		sort = value
+		queue_sort() 
+
 @export_group("Items")
-## Défini si tous les enfants doivent prendre un espace minimum semblable à celui de l'enfant le plus grand
+## If [code]true[/code], children minimum space matche the biggest [member custom_minimum_size] among them
 @export var match_largest : bool = false :
 	set(value):
 		match_largest = value
 		queue_sort() 
 
-## Défini comment les enfants ont le droit de s'étendre
+## The way children are allowed to expand (must be one of [enum NONE], [enum VERTICAL], [enum HORIZONTAL], or [enum BOTH])
 @export var allow_expand : Expand = Expand.NONE :
 	set(value):
 		allow_expand = value
 		queue_sort() 
 
 @export_group("Margin")
-## Marge générale
+## General margin applied to the content, changing this values changes the value of all detailed margins ([member margin_top], [member margin_bottom], [member margin_left], and [member margin_right])
 @export var margin : float = 0 :
 	set(value):
 		margin = value
@@ -71,39 +77,39 @@ class_name FlexContainer
 		queue_sort() 
 
 @export_subgroup("Detailed margins")
-## Marge supérieure du contenu
+## Margin from the top
 @export var margin_top : float = 0 :
 	set(value):
 		margin_top = value
 		queue_sort() 
 
-## Marge inférieure du contenu
+## Margin from the bottom
 @export var margin_bottom : float = 0 :
 	set(value):
 		margin_bottom = value
 		queue_sort() 
 
-## Marge gauche du contenu
+## Margin from the left
 @export var margin_left : float = 0 :
 	set(value):
 		margin_left = value
 		queue_sort() 
 
-## Marge droite du contenu
+## Margin from the right
 @export var margin_right : float = 0 :
 	set(value):
 		margin_right = value
 		queue_sort() 
 
 @export_group("Gap")
-## Espacement vertical entre les enfants
+## Vertical gap between children
 @export var gap_vertical : float = 0 :
 	set(value):
 		gap_vertical = value
 		_update_axis()
 		queue_sort() 
 
-## Espacement horizontal entre les enfants
+## Horizontal gap between children
 @export var gap_horizontal : float = 0 :
 	set(value):
 		gap_horizontal = value
@@ -111,41 +117,34 @@ class_name FlexContainer
 		queue_sort() 
 
 @export_group("Panel")
-## Style du panel appliqué au Container
+## StyleBox applied as a background of the FlexContainer
 @export var panel : StyleBox :
 	set(value):
 		panel = value
 		queue_redraw()
 		queue_sort()
 
-#endregion
 
-#region Enums
-## Alignements possibles des enfants
 enum Align {
-	BEGIN, ## Enfants disposés au début du Container
-	CENTER, ## Enfants disposés au milieu du Container
-	END ## Enfants disposés à la fin du Container
+	BEGIN, ## Align children at the beginning of this axis
+	CENTER, ## Align children at the center of this axis
+	END ## Align children at the end of this axis
 }
 
-## Remplissage de l'espace possibles
 enum Expand {
-	NONE, ## Garde la taille minimale
-	VERTICAL, ## Rempli l'espace vertical
-	HORIZONTAL, ## Rempli l'espace horizontal
-	BOTH ## Rempli l'espace vertical et horizontal
+	NONE, ## Children keep their minimum size
+	VERTICAL, ## Children are allowed to expand vertically
+	HORIZONTAL, ## Children are allowed to expand horizontally
+	BOTH ## Children are allowed to expand on both axis
 }
 
-## Tris possibles pour les enfants
 enum Sort {
-	NORMAL, ## Reprend l'ordre de l'arbre
-	REVERSE, ## Inverse l'ordre de l'arbre
-	RANDOM ## Ordonne au hasard
+	NORMAL, ## Sorts children the way they appear in the tree
+	REVERSE, ## Sorts the children in reverse order of their appearance in the tree
+	RANDOM ## Sorts children randomly, [color=red]children order will be randomized every time the container calculate their placement ![/color]
 }
 
-#endregion
 
-#region Var
 var main := 0
 var cross := 1
 
@@ -155,12 +154,9 @@ var gap_cross := 0.0
 var align_main := Align.BEGIN
 var align_cross := Align.BEGIN
 
-## Dernière taille calculée dans le sens de travers
 var _cached_wrap_size: float = 0.0
 
-#endregion
 
-#region Main func
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_SORT_CHILDREN:
 		_sort_children()
@@ -171,7 +167,6 @@ func _draw_panel() -> void:
 	if panel:
 		panel.draw(get_canvas_item(), Rect2(Vector2.ZERO, size))
 
-## Renvoie la taille minimum possible du Container
 func _get_minimum_size() -> Vector2:
 	var children := _get_layout_children()
 	if children.is_empty():
@@ -203,7 +198,6 @@ func _get_minimum_size() -> Vector2:
 	
 	return minimum_size + _get_total_insets()
 
-## Positionne les enfants
 func _sort_children() -> void:
 	var children := _get_layout_children()
 	if children.is_empty():
@@ -219,7 +213,6 @@ func _sort_children() -> void:
 	_place_lines(lines, inner)
 	update_minimum_size()
 
-## Renvoie une liste de rangées d'enfants respectant les paramètres du Container
 func _build_lines(children: Array[Control], available_size: Vector2) -> Array[Dictionary]:
 	var lines: Array[Dictionary] = []
 	var line := _make_line()
@@ -268,7 +261,6 @@ func _build_lines(children: Array[Control], available_size: Vector2) -> Array[Di
 
 	return lines
 
-## Place rangées d'enfants
 func _place_lines(lines: Array[Dictionary], inner: Rect2) -> void:
 	var content_cross := 0.0
 	for i in lines.size():
@@ -310,10 +302,7 @@ func _place_lines(lines: Array[Dictionary], inner: Rect2) -> void:
 
 		cursor_cross += line["size"][cross] + gap_cross
 
-#endregion
 
-#region Expand logic
-## Adapte la taille des enfants en fonction du mode d'expand
 func _expand_items(lines : Array[Dictionary], available_size : Vector2) -> void:
 	if allow_expand == Expand.NONE:
 		return
@@ -392,10 +381,8 @@ func _has_expand_flag(control : Control, expand_direction : Expand) -> bool:
 			return (control.size_flags_horizontal & Control.SIZE_EXPAND) != 0
 		_:
 			return false
-#endregion
 
-#region Get helpers
-## Récupère les enfants Control visibles dans l'ordre souhaité
+
 func _get_layout_children() -> Array[Control]: 
 	var result: Array[Control] = []
 	for child in get_children():
@@ -408,11 +395,9 @@ func _get_layout_children() -> Array[Control]:
 		result.shuffle()
 	return result
 
-## Renvoie la somme des marges horizontales et verticales
 func _get_total_insets() -> Vector2:
 	return Vector2(margin_left + margin_right, margin_top + margin_bottom)
 
-## Renvoie le rectangle dans lequel les enfants peuvent être placés
 func _get_inner_rect() -> Rect2:
 	var pos := Vector2(margin_left, margin_top)
 	var rect_size := size - _get_total_insets()
@@ -429,7 +414,6 @@ func _get_max_ratio(items: Array, expand_direction: Expand) -> float:
 		)
 	, 0.0)
 
-## Renvoie la taille minimum la plus grande parmis les enfants
 func _get_largest_children_minimum_size(children_sizes: Array[Vector2]) -> Vector2:
 	var max_height := 0.0
 	var max_width := 0.0
@@ -440,10 +424,7 @@ func _get_largest_children_minimum_size(children_sizes: Array[Vector2]) -> Vecto
 	var minimum_size := Vector2(max_width, max_height)
 	return minimum_size
 
-#endregion
 
-#region Update helpers
-## Mets à jour quels axe et espacement sont principales ou secondaire
 func _update_axis():
 	main = int(vertical)
 	cross = int(!vertical)
@@ -452,7 +433,6 @@ func _update_axis():
 	align_main = align_vertical if vertical else align_horizontal
 	align_cross = align_horizontal if vertical else align_vertical
 
-## Enregistre la taille dans le sens de travers
 func _update_cached_wrap_size(lines: Array[Dictionary]) -> void:
 	var total_cross := 0.0
 
@@ -463,27 +443,20 @@ func _update_cached_wrap_size(lines: Array[Dictionary]) -> void:
 
 	_cached_wrap_size = total_cross
 
-#endregion
 
-#region Object makers
-## Renvoie un template de dictionnaire décrivant une rangée d'enfant
 func _make_line() -> Dictionary:
 	return {
 		"items": [],
 		"size": Vector2(0,0)
 	}
 
-## Renvoie un dictionnaire décrivant la taille d'un enfant
 func _make_item(child: Control) -> Dictionary:
 	return {
 		"child": child,
 		"size": child.get_combined_minimum_size(),
 	}
 
-#endregion
 
-#region Other small helpers
-## Renvoie un offset à appliquer à la position des enfants en fonction du mode d'alignement
 func _aligned_offset(available: float, used: float, align_mode: Align) -> float:
 	match align_mode:
 		Align.CENTER:
@@ -492,5 +465,3 @@ func _aligned_offset(available: float, used: float, align_mode: Align) -> float:
 			return available - used
 		_:
 			return 0.0
-
-#endregion
