@@ -1,4 +1,4 @@
-# ![FlexContainer class icon](./icon_32px.png) Flex-Container
+# ![FlexContainer class icon](./icon/icon_32px.png) Flex-Container
 ### A Container that arranges its children horizontally or vertically and provides various additionnal properties.
 
 These properties include : 
