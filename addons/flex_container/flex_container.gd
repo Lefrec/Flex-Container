@@ -10,7 +10,7 @@
 class_name FlexContainer
 extends Container
 
-## More properties may be appear in the future.
+## More properties may appear in the future.
 
 @export_group("Layout")
 ## If [code]true[/code], arranges its children vertically instead of horizontally.
