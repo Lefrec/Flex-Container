@@ -1,0 +1,111 @@
+[gd_scene format=3 uid="uid://bvwx4k80uhmkb"]
+
+[ext_resource type="Script" uid="uid://qjk2k16hh77c" path="res://flex_container.gd" id="1_ukev3"]
+
+[node name="FlexContainer" type="Container" unique_id=942189517]
+offset_top = -657.0
+offset_right = 524.0
+offset_bottom = 338.0
+script = ExtResource("1_ukev3")
+vertical = true
+align_vertical = 2
+wrapping = true
+reverse_fill = true
+margin = 20.0
+margin_top = 20.0
+margin_bottom = 20.0
+margin_left = 20.0
+margin_right = 20.0
+gap_vertical = 10.0
+gap_horizontal = 10.0
+metadata/_custom_type_script = "uid://qjk2k16hh77c"
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=1304720447]
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ColorRect2" type="ColorRect" parent="." unique_id=1224773662]
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ColorRect3" type="ColorRect" parent="." unique_id=1832027612]
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ColorRect4" type="ColorRect" parent="." unique_id=667292368]
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ColorRect5" type="ColorRect" parent="." unique_id=1026631041]
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ColorRect6" type="ColorRect" parent="." unique_id=320399793]
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ColorRect7" type="ColorRect" parent="." unique_id=1589499969]
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ColorRect8" type="ColorRect" parent="." unique_id=1957170868]
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ColorRect9" type="ColorRect" parent="." unique_id=1356615339]
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ColorRect10" type="ColorRect" parent="." unique_id=1743151304]
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ColorRect11" type="ColorRect" parent="." unique_id=357761796]
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ColorRect12" type="ColorRect" parent="." unique_id=2134376216]
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ColorRect13" type="ColorRect" parent="." unique_id=2026058725]
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ColorRect14" type="ColorRect" parent="." unique_id=1693884163]
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ColorRect15" type="ColorRect" parent="." unique_id=1220444448]
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
