@@ -34,10 +34,23 @@ extends Container
 		_update_axis()
 		queue_sort() 
 
+## The way children are sorted (must be one of [enum NORMAL], [enum REVERSE], or [enum RANDOM])
+@export var sort : Sort = Sort.NORMAL :
+	set(value):
+		sort = value
+		queue_sort() 
+
+@export_group("Wrapping")
 ## If [code]true[/code], creates new rows or columns to fit children
 @export var wrapping : bool = false :
 	set(value):
 		wrapping = value
+		queue_sort() 
+
+## Alignement of the last row or column when [code]wrapping is true[/code], relative to the largest row or column.
+@export var align_wrap : Align = Align.BEGIN :
+	set(value):
+		align_wrap = value
 		queue_sort() 
 
 ## If [code]wrapping is true[/code], places the rows or columns from last to first
@@ -45,12 +58,6 @@ extends Container
 	set(value):
 		reverse_fill = value
 		queue_sort()
-
-## The way children are sorted (must be one of [enum NORMAL], [enum REVERSE], or [enum RANDOM])
-@export var sort : Sort = Sort.NORMAL :
-	set(value):
-		sort = value
-		queue_sort() 
 
 @export_group("Items")
 ## If [code]true[/code], children minimum space matche the biggest [member custom_minimum_size] among them
@@ -163,9 +170,11 @@ func _notification(what: int) -> void:
 	elif what == NOTIFICATION_DRAW:
 		_draw_panel()
 
+
 func _draw_panel() -> void:
 	if panel:
 		panel.draw(get_canvas_item(), Rect2(Vector2.ZERO, size))
+
 
 func _get_minimum_size() -> Vector2:
 	var children := _get_layout_children()
@@ -198,6 +207,7 @@ func _get_minimum_size() -> Vector2:
 	
 	return minimum_size + _get_total_insets()
 
+
 func _sort_children() -> void:
 	var children := _get_layout_children()
 	if children.is_empty():
@@ -212,6 +222,7 @@ func _sort_children() -> void:
 	var lines := _build_lines(children, inner.size)
 	_place_lines(lines, inner)
 	update_minimum_size()
+
 
 func _build_lines(children: Array[Control], available_size: Vector2) -> Array[Dictionary]:
 	var lines: Array[Dictionary] = []
@@ -261,6 +272,7 @@ func _build_lines(children: Array[Control], available_size: Vector2) -> Array[Di
 
 	return lines
 
+
 func _place_lines(lines: Array[Dictionary], inner: Rect2) -> void:
 	var content_cross := 0.0
 	for i in lines.size():
@@ -279,9 +291,16 @@ func _place_lines(lines: Array[Dictionary], inner: Rect2) -> void:
 	if reverse_fill:
 		lines.reverse()
 
-	for line in lines:
+	for index in lines.size():
+		var line = lines[index]
+		
 		var main_space := inner.size[main]
 		var main_start := _aligned_offset(main_space, line["size"][main], align_main)
+
+		if wrapping:
+			if (reverse_fill and index == 0) or (!reverse_fill and index == (lines.size() - 1)):
+				var main_max := _get_largest_line(lines)
+				main_start = _aligned_offset(main_space, main_max, align_main) + _aligned_offset(main_max, line["size"][main], align_wrap)
 
 		var cursor_main := main_start
 
@@ -319,6 +338,7 @@ func _expand_items(lines : Array[Dictionary], available_size : Vector2) -> void:
 		else:
 			_expand_on_cross_axis(lines, available_size[cross], Expand.VERTICAL)
 
+
 func _expand_on_main_axis(lines: Array[Dictionary], available_main: float, expand_direction: Expand) -> void:
 	for line in lines:
 		var remaining := maxf(0.0, available_main - line["size"][main])
@@ -340,6 +360,7 @@ func _expand_on_main_axis(lines: Array[Dictionary], available_main: float, expan
 			item["size"][main] += stretch
 
 		line["size"][main] = available_main
+
 
 func _expand_on_cross_axis(lines: Array[Dictionary], available_cross: float, expand_direction: Expand) -> void:
 	var used := 0.0
@@ -368,10 +389,12 @@ func _expand_on_cross_axis(lines: Array[Dictionary], available_cross: float, exp
 		for item in line["items"]:
 			item["size"][cross] = line["size"][cross]
 
+
 func _direction_matches_main_axis(expand_direction: Expand) -> bool:
 	if vertical:
 		return expand_direction == Expand.VERTICAL
 	return expand_direction == Expand.HORIZONTAL
+
 
 func _has_expand_flag(control : Control, expand_direction : Expand) -> bool:
 	match expand_direction:
@@ -395,8 +418,10 @@ func _get_layout_children() -> Array[Control]:
 		result.shuffle()
 	return result
 
+
 func _get_total_insets() -> Vector2:
 	return Vector2(margin_left + margin_right, margin_top + margin_bottom)
+
 
 func _get_inner_rect() -> Rect2:
 	var pos := Vector2(margin_left, margin_top)
@@ -404,6 +429,14 @@ func _get_inner_rect() -> Rect2:
 	rect_size.x = maxf(0.0, rect_size.x)
 	rect_size.y = maxf(0.0, rect_size.y)
 	return Rect2(pos, rect_size)
+
+
+func _get_largest_line(lines: Array[Dictionary]) -> float:
+	var largest := 0.0
+	for line in lines:
+		largest = maxf(largest, line["size"][main])
+	return largest
+
 
 func _get_max_ratio(items: Array, expand_direction: Expand) -> float:
 	return items.reduce(func(max_value: float, item: Dictionary) -> float:
@@ -413,6 +446,7 @@ func _get_max_ratio(items: Array, expand_direction: Expand) -> float:
 			child.size_flags_stretch_ratio if _has_expand_flag(child, expand_direction) else 0.0
 		)
 	, 0.0)
+
 
 func _get_largest_children_minimum_size(children_sizes: Array[Vector2]) -> Vector2:
 	var max_height := 0.0
@@ -433,6 +467,7 @@ func _update_axis():
 	align_main = align_vertical if vertical else align_horizontal
 	align_cross = align_horizontal if vertical else align_vertical
 
+
 func _update_cached_wrap_size(lines: Array[Dictionary]) -> void:
 	var total_cross := 0.0
 
@@ -449,6 +484,7 @@ func _make_line() -> Dictionary:
 		"items": [],
 		"size": Vector2(0,0)
 	}
+
 
 func _make_item(child: Control) -> Dictionary:
 	return {
