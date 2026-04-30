@@ -12,6 +12,8 @@ extends Container
 
 ## More properties may appear in the future.
 
+#region Export Layout
+
 @export_group("Layout")
 ## If [code]true[/code], arranges its children vertically instead of horizontally.
 @export var vertical : bool = false :
@@ -40,6 +42,10 @@ extends Container
 		sort = value
 		queue_sort() 
 
+#endregion
+
+#region Export Wrapping
+
 @export_group("Wrapping")
 ## If [code]true[/code], creates new rows or columns to fit children
 @export var wrapping : bool = false :
@@ -59,6 +65,10 @@ extends Container
 		reverse_fill = value
 		queue_sort()
 
+#endregion
+
+#region Export Items
+
 @export_group("Items")
 ## If [code]true[/code], children minimum space matche the biggest [member custom_minimum_size] among them
 @export var match_largest : bool = false :
@@ -71,6 +81,10 @@ extends Container
 	set(value):
 		allow_expand = value
 		queue_sort() 
+
+#endregion
+
+#region Export Margin
 
 @export_group("Margin")
 ## General margin applied to the content, changing this values changes the value of all detailed margins ([member margin_top], [member margin_bottom], [member margin_left], and [member margin_right])
@@ -108,6 +122,10 @@ extends Container
 		margin_right = value
 		queue_sort() 
 
+#endregion
+
+#region Export Gap
+
 @export_group("Gap")
 ## Vertical gap between children
 @export var gap_vertical : float = 0 :
@@ -123,6 +141,10 @@ extends Container
 		_update_axis()
 		queue_sort() 
 
+#endregion
+
+#region Export Panel
+
 @export_group("Panel")
 ## StyleBox applied as a background of the FlexContainer
 @export var panel : StyleBox :
@@ -131,6 +153,9 @@ extends Container
 		queue_redraw()
 		queue_sort()
 
+#endregion
+
+#region Enums
 
 enum Align {
 	BEGIN, ## Align children at the beginning of this axis
@@ -151,6 +176,9 @@ enum Sort {
 	RANDOM ## Sorts children randomly, [color=red]children order will be randomized every time the container calculate their placement ![/color]
 }
 
+#endregion
+
+#region Var directions
 
 var main := 0
 var cross := 1
@@ -161,7 +189,15 @@ var gap_cross := 0.0
 var align_main := Align.BEGIN
 var align_cross := Align.BEGIN
 
+#endregion
+
+#region Var cache
+
 var _cached_wrap_size: float = 0.0
+
+#endregion
+
+#region Func Main
 
 
 func _notification(what: int) -> void:
@@ -174,38 +210,6 @@ func _notification(what: int) -> void:
 func _draw_panel() -> void:
 	if panel:
 		panel.draw(get_canvas_item(), Rect2(Vector2.ZERO, size))
-
-
-func _get_minimum_size() -> Vector2:
-	var children := _get_layout_children()
-	if children.is_empty():
-		return _get_total_insets()
-
-	var children_sizes: Array[Vector2] = []
-	for child in children:
-		children_sizes.append(child.get_combined_minimum_size())
-
-	var minimum_size := Vector2.ZERO
-	
-	var largest_minimim_size := _get_largest_children_minimum_size(children_sizes)
-
-	if wrapping:
-		minimum_size = largest_minimim_size
-		if _cached_wrap_size > 0.0:
-			minimum_size[cross] = _cached_wrap_size
-	else:
-		var max_cross := 0.0
-		var total_main := 0.0
-		for index in children_sizes.size():
-			var child_size := children_sizes[index]
-			total_main += largest_minimim_size[main] if match_largest else child_size[main]
-			if index > 0:
-				total_main += gap_main
-			max_cross = maxf(max_cross, child_size[cross])
-		minimum_size[main] = total_main
-		minimum_size[cross] = max_cross
-	
-	return minimum_size + _get_total_insets()
 
 
 func _sort_children() -> void:
@@ -222,6 +226,11 @@ func _sort_children() -> void:
 	var lines := _build_lines(children, inner.size)
 	_place_lines(lines, inner)
 	update_minimum_size()
+
+
+#endregion
+
+#region Func Lines
 
 
 func _build_lines(children: Array[Control], available_size: Vector2) -> Array[Dictionary]:
@@ -322,6 +331,11 @@ func _place_lines(lines: Array[Dictionary], inner: Rect2) -> void:
 		cursor_cross += line["size"][cross] + gap_cross
 
 
+#endregion
+
+#region Func Expand
+
+
 func _expand_items(lines : Array[Dictionary], available_size : Vector2) -> void:
 	if allow_expand == Expand.NONE:
 		return
@@ -390,20 +404,41 @@ func _expand_on_cross_axis(lines: Array[Dictionary], available_cross: float, exp
 			item["size"][cross] = line["size"][cross]
 
 
-func _direction_matches_main_axis(expand_direction: Expand) -> bool:
-	if vertical:
-		return expand_direction == Expand.VERTICAL
-	return expand_direction == Expand.HORIZONTAL
+#endregion
+
+#region Func Getters
 
 
-func _has_expand_flag(control : Control, expand_direction : Expand) -> bool:
-	match expand_direction:
-		Expand.VERTICAL:
-			return (control.size_flags_vertical & Control.SIZE_EXPAND) != 0
-		Expand.HORIZONTAL:
-			return (control.size_flags_horizontal & Control.SIZE_EXPAND) != 0
-		_:
-			return false
+func _get_minimum_size() -> Vector2:
+	var children := _get_layout_children()
+	if children.is_empty():
+		return _get_total_insets()
+
+	var children_sizes: Array[Vector2] = []
+	for child in children:
+		children_sizes.append(child.get_combined_minimum_size())
+
+	var minimum_size := Vector2.ZERO
+	
+	var largest_minimim_size := _get_largest_children_minimum_size(children_sizes)
+
+	if wrapping:
+		minimum_size = largest_minimim_size
+		if _cached_wrap_size > 0.0:
+			minimum_size[cross] = _cached_wrap_size
+	else:
+		var max_cross := 0.0
+		var total_main := 0.0
+		for index in children_sizes.size():
+			var child_size := children_sizes[index]
+			total_main += largest_minimim_size[main] if match_largest else child_size[main]
+			if index > 0:
+				total_main += gap_main
+			max_cross = maxf(max_cross, child_size[cross])
+		minimum_size[main] = total_main
+		minimum_size[cross] = max_cross
+	
+	return minimum_size + _get_total_insets()
 
 
 func _get_layout_children() -> Array[Control]: 
@@ -459,6 +494,11 @@ func _get_largest_children_minimum_size(children_sizes: Array[Vector2]) -> Vecto
 	return minimum_size
 
 
+#endregion
+
+#region Func Update
+
+
 func _update_axis():
 	main = int(vertical)
 	cross = int(!vertical)
@@ -479,6 +519,11 @@ func _update_cached_wrap_size(lines: Array[Dictionary]) -> void:
 	_cached_wrap_size = total_cross
 
 
+#endregion
+
+#region Func Make
+
+
 func _make_line() -> Dictionary:
 	return {
 		"items": [],
@@ -493,6 +538,11 @@ func _make_item(child: Control) -> Dictionary:
 	}
 
 
+#endregion
+
+#region Func Other helpers
+
+
 func _aligned_offset(available: float, used: float, align_mode: Align) -> float:
 	match align_mode:
 		Align.CENTER:
@@ -501,3 +551,22 @@ func _aligned_offset(available: float, used: float, align_mode: Align) -> float:
 			return available - used
 		_:
 			return 0.0
+
+
+func _has_expand_flag(control : Control, expand_direction : Expand) -> bool:
+	match expand_direction:
+		Expand.VERTICAL:
+			return (control.size_flags_vertical & Control.SIZE_EXPAND) != 0
+		Expand.HORIZONTAL:
+			return (control.size_flags_horizontal & Control.SIZE_EXPAND) != 0
+		_:
+			return false
+
+
+func _direction_matches_main_axis(expand_direction: Expand) -> bool:
+	if vertical:
+		return expand_direction == Expand.VERTICAL
+	return expand_direction == Expand.HORIZONTAL
+
+
+#endregion
