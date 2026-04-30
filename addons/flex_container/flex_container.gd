@@ -195,6 +195,8 @@ var align_cross := Align.BEGIN
 
 var _cached_wrap_size: float = 0.0
 
+var _cached_largest_children_minimum_size : Vector2 = Vector2(0,0)
+
 #endregion
 
 #region Func Main
@@ -216,11 +218,13 @@ func _sort_children() -> void:
 	var children := _get_layout_children()
 	if children.is_empty():
 		_cached_wrap_size = 0.0
+		_cached_largest_children_minimum_size = Vector2.ZERO
 		return
 
 	var inner := _get_inner_rect()
 	if inner.size.x <= 0.0 or inner.size.y <= 0.0:
 		_cached_wrap_size = 0.0
+		_cached_largest_children_minimum_size = Vector2.ZERO
 		return
 
 	var lines := _build_lines(children, inner.size)
@@ -239,19 +243,13 @@ func _build_lines(children: Array[Control], available_size: Vector2) -> Array[Di
 
 	var max_main := available_size[main]
 
-	var children_sizes: Array[Vector2] = []
-	for child in children:
-		children_sizes.append(child.get_combined_minimum_size())
-
-	var largest_size = _get_largest_children_minimum_size(children_sizes)
-
 	for child in children:
 		var item := _make_item(child)
 		
-		item["size"][cross] = largest_size[cross]
+		item["size"][cross] = _cached_largest_children_minimum_size[cross]
 		
 		if match_largest:
-			item["size"][main] = largest_size[main]
+			item["size"][main] = _cached_largest_children_minimum_size[main]
 	
 		var projected : float = line["size"][main]
 
@@ -420,10 +418,10 @@ func _get_minimum_size() -> Vector2:
 
 	var minimum_size := Vector2.ZERO
 	
-	var largest_minimim_size := _get_largest_children_minimum_size(children_sizes)
+	_cached_largest_children_minimum_size = _get_largest_children_minimum_size(children_sizes)
 
 	if wrapping:
-		minimum_size = largest_minimim_size
+		minimum_size = _cached_largest_children_minimum_size
 		if _cached_wrap_size > 0.0:
 			minimum_size[cross] = _cached_wrap_size
 	else:
@@ -431,7 +429,7 @@ func _get_minimum_size() -> Vector2:
 		var total_main := 0.0
 		for index in children_sizes.size():
 			var child_size := children_sizes[index]
-			total_main += largest_minimim_size[main] if match_largest else child_size[main]
+			total_main += _cached_largest_children_minimum_size[main] if match_largest else child_size[main]
 			if index > 0:
 				total_main += gap_main
 			max_cross = maxf(max_cross, child_size[cross])
