@@ -2,8 +2,9 @@
 ### A Container that arranges its children horizontally or vertically and provides various additionnal properties.
 
 These properties include : 
-- axis alignement
+- axis alignment
 - wrapping
+- last line specific alignment
 - sorting
 - reverse filling
 - allowing children to expand

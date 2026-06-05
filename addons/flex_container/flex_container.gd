@@ -74,7 +74,7 @@ extends Container
 @export var match_largest : bool = false :
 	set(value):
 		match_largest = value
-		queue_sort() 
+		queue_sort()
 
 ## The way children are allowed to expand (must be one of [enum NONE], [enum VERTICAL], [enum HORIZONTAL], or [enum BOTH])
 @export var allow_expand : Expand = Expand.NONE :
